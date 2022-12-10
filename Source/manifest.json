@@ -1,5 +1,6 @@
 {
-  "Actions": [{
+  "Actions": [
+    {
       "Name": "NewTek Shortcut",
       "States": [
         {
@@ -13,6 +14,21 @@
       "Tooltip": "send NewTek shortcut",
       "UUID": "dev.flowingspdg.newtek.shortcut",
       "Icon": "images/icon" 
+    },
+    {
+      "Name": "Preview Video Thumbnail",
+      "States": [
+        {
+          "Image": "images/icon",
+          "TitleAlignment": "middle",
+          "FontSize": "24"
+        }
+      ],
+      "PropertyInspectorPath": "inspector/thumbnail.html", 
+      "SupportedInMultiActions": true,
+      "Tooltip": "Preview Video Thumbnail",
+      "UUID": "dev.flowingspdg.newtek.videopreview",
+      "Icon": "images/icon" 
     }
   ],
   "SDKVersion": 2,
@@ -24,7 +40,7 @@
   "Name": "NewTek Unofficial", 
   "Icon": "images/icon", 
   "URL": "https://flowing.tokyo", 
-  "Version": "0.1.1",
+  "Version": "0.1.2",
   "OS": [
     {
       "Platform": "mac", 

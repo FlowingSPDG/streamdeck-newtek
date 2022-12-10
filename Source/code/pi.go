@@ -19,12 +19,27 @@ func (p *ShortcutPI) IsDefault() bool {
 }
 
 func (p *ShortcutPI) Initialize() {
-	p = &ShortcutPI{
-		Shortcut: "",
-		Host:     "",
-		User:     "admin",
-		Password: "admin",
-		Key:      "",
-		Value:    "",
+	p.User = "admin"
+	p.Password = "admin"
+}
+
+// VideoPreviewPI Property Inspector setting for Video Thumbnail Preview
+type VideoPreviewPI struct {
+	Host     string `json:"host"`
+	User     string `json:"user"`
+	Password string `json:"password"`
+	Name     string `json:"name"`
+}
+
+func (p *VideoPreviewPI) IsDefault() bool {
+	if p.Name == "" && p.Host == "" && p.User == "" && p.Password == "" {
+		return true
 	}
+	return false
+}
+
+func (p *VideoPreviewPI) Initialize() {
+	p.User = "admin"
+	p.Password = "admin"
+	p.Name = "output1"
 }
