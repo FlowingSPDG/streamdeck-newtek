@@ -1,7 +1,7 @@
 {
   "Actions": [
     {
-      "Name": "NewTek Shortcut(HTTP)",
+      "Name": "Shortcut(HTTP)",
       "States": [
         {
           "Image": "images/icon",
@@ -16,7 +16,7 @@
       "Icon": "images/icon" 
     },
     {
-      "Name": "NewTek Shortcut(TCP)",
+      "Name": "Shortcut(TCP)",
       "States": [
         {
           "Image": "images/icon",
@@ -26,7 +26,7 @@
       ],
       "PropertyInspectorPath": "inspector/shortcut_tcp.html", 
       "SupportedInMultiActions": true,
-      "Tooltip": "send NewTek shortcut(TCP)",
+      "Tooltip": "send Shortcut(TCP)",
       "UUID": "dev.flowingspdg.newtek.shortcuttcp",
       "Icon": "images/icon" 
     },
@@ -55,7 +55,7 @@
   "Name": "NewTek Unofficial", 
   "Icon": "images/icon", 
   "URL": "https://flowing.tokyo", 
-  "Version": "0.1.2",
+  "Version": "0.1.3",
   "OS": [
     {
       "Platform": "mac", 
