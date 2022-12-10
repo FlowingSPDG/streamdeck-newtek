@@ -35,7 +35,7 @@ func (s *SDNewTek) ShortcutWillAppearHandler(ctx context.Context, client *stream
 		client.SetSettings(ctx, settings)
 	}
 
-	msg := fmt.Sprintf("WillAppear with settings :%v", settings)
+	msg := fmt.Sprintf("Context %s WillAppear with settings :%v", event.Context, settings)
 	client.LogMessage(msg)
 	return nil
 }
@@ -111,7 +111,7 @@ func (s *SDNewTek) VideoPreviewWillAppearHandler(ctx context.Context, client *st
 		client.SetSettings(ctx, settings)
 	}
 
-	msg := fmt.Sprintf("WillAppear with settings :%v", settings)
+	msg := fmt.Sprintf("Context %s WillAppear with settings :%v", event.Context, settings)
 	client.LogMessage(msg)
 	return nil
 }
