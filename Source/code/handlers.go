@@ -231,3 +231,24 @@ func (s *SDNewTek) ShortcutTCPKeyDownHandler(ctx context.Context, client *stream
 
 	return client.ShowOk(ctx)
 }
+
+func (s *SDNewTek) VideoPreviewDidReceiveSettingsHandler(ctx context.Context, client *streamdeck.Client, event streamdeck.Event) error {
+	payload := streamdeck.DidReceiveGlobalSettingsPayload{}
+	if err := json.Unmarshal(event.Payload, &payload); err != nil {
+		msg := fmt.Sprintf("Failed to unmarshal KeyDown event payload: %s", err)
+		client.LogMessage(msg)
+		client.ShowAlert(ctx)
+		return err
+	}
+
+	pi := VideoPreviewPI{}
+	if err := json.Unmarshal(payload.Settings, &pi); err != nil {
+		msg := fmt.Sprintf("Failed to unmarshal KeyDown settings payload: %s", err)
+		client.LogMessage(msg)
+		client.ShowAlert(ctx)
+		return err
+	}
+
+	s.videoPreviewContext[event.Context] = pi
+	return nil
+}

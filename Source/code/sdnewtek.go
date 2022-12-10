@@ -2,8 +2,12 @@ package sdnewtek
 
 import (
 	"context"
+	"fmt"
+	"time"
 
+	"github.com/FlowingSPDG/newtek-go"
 	"github.com/FlowingSPDG/streamdeck"
+	sdcontext "github.com/FlowingSPDG/streamdeck/context"
 )
 
 const (
@@ -29,7 +33,7 @@ type SDNewTek struct {
 
 	shortcutContexts    map[string]struct{}
 	shortcutTCPContexts map[string]struct{}
-	videoPreviewContext map[string]struct{}
+	videoPreviewContext map[string]VideoPreviewPI
 }
 
 func NewSDNewTek(ctx context.Context, params streamdeck.RegistrationParams) *SDNewTek {
@@ -37,7 +41,7 @@ func NewSDNewTek(ctx context.Context, params streamdeck.RegistrationParams) *SDN
 		sd:                  nil,
 		shortcutContexts:    map[string]struct{}{},
 		shortcutTCPContexts: map[string]struct{}{},
-		videoPreviewContext: map[string]struct{}{},
+		videoPreviewContext: map[string]VideoPreviewPI{},
 	}
 
 	client := streamdeck.NewClient(ctx, params)
@@ -57,7 +61,7 @@ func NewSDNewTek(ctx context.Context, params streamdeck.RegistrationParams) *SDN
 	actionVideoPreview := client.Action(ActionVideoPreview)
 	actionVideoPreview.RegisterHandler(streamdeck.WillAppear, ret.VideoPreviewWillAppearHandler)
 	actionVideoPreview.RegisterHandler(streamdeck.WillAppear, func(ctx context.Context, client *streamdeck.Client, event streamdeck.Event) error {
-		ret.videoPreviewContext[event.Context] = struct{}{}
+		ret.videoPreviewContext[event.Context] = VideoPreviewPI{}
 		return nil
 	})
 	actionVideoPreview.RegisterHandler(streamdeck.KeyDown, ret.VideoPreviewKeyDownHandler)
@@ -65,6 +69,7 @@ func NewSDNewTek(ctx context.Context, params streamdeck.RegistrationParams) *SDN
 		delete(ret.videoPreviewContext, event.Context)
 		return nil
 	})
+	actionVideoPreview.RegisterHandler(streamdeck.DidReceiveSettings, ret.VideoPreviewDidReceiveSettingsHandler)
 
 	actionShortcutTCP := client.Action(ActionShortcutTCP)
 	actionShortcutTCP.RegisterHandler(streamdeck.WillAppear, ret.ShortcutTCPWillAppearHandler)
@@ -83,6 +88,43 @@ func NewSDNewTek(ctx context.Context, params streamdeck.RegistrationParams) *SDN
 	return ret
 }
 
-func (s *SDNewTek) Run() error {
+func (s *SDNewTek) Run(ctx context.Context) error {
+	go s.videoPreviewGoroutine(ctx)
 	return s.sd.Run()
+}
+
+// videoPreviewGoroutine ctxはStreamDeckのcontextを使う
+func (s *SDNewTek) videoPreviewGoroutine(ctx context.Context) error {
+	for {
+		time.Sleep(time.Second)
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+			for ctxStr, pi := range s.videoPreviewContext {
+				if !pi.KeepUpdated {
+					continue
+				}
+				ctx = sdcontext.WithContext(ctx, ctxStr)
+				c, err := newtek.NewClientV1(pi.Host, pi.User, pi.Password)
+				if err != nil {
+					msg := fmt.Sprintf("Failed to connect NewTek Client: %s", err)
+					s.sd.LogMessage(msg)
+					s.sd.ShowAlert(ctx)
+					return err
+				}
+
+				img, err := c.VideoPreview(pi.Name, 144, 144, 25)
+				if err != nil {
+					msg := fmt.Sprintf("Failed to send Shortcut to NewTek Client: %s", err)
+					s.sd.LogMessage(msg)
+					s.sd.ShowAlert(ctx)
+					return err
+				}
+
+				i, _ := streamdeck.Image(img)
+				s.sd.SetImage(ctx, i, streamdeck.HardwareAndSoftware)
+			}
+		}
+	}
 }

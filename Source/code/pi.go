@@ -27,10 +27,11 @@ func (p *ShortcutPI) Initialize() {
 
 // VideoPreviewPI Property Inspector setting for Video Thumbnail Preview
 type VideoPreviewPI struct {
-	Host     string `json:"host"`
-	User     string `json:"user"`
-	Password string `json:"password"`
-	Name     string `json:"name"`
+	Host        string `json:"host"`
+	User        string `json:"user"`
+	Password    string `json:"password"`
+	Name        string `json:"name"`
+	KeepUpdated bool   `json:"keep_updated"`
 }
 
 func (p *VideoPreviewPI) IsDefault() bool {

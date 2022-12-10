@@ -36,5 +36,5 @@ func run(ctx context.Context) error {
 
 	client := sdnewtek.NewSDNewTek(ctx, params)
 
-	return client.Run()
+	return client.Run(ctx)
 }
