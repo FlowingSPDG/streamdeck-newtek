@@ -249,6 +249,6 @@ func (s *SDNewTek) VideoPreviewDidReceiveSettingsHandler(ctx context.Context, cl
 		return err
 	}
 
-	s.videoPreviewContext[event.Context] = pi
+	s.videoPreviewContext.Store(event.Context, pi)
 	return nil
 }

@@ -42,8 +42,15 @@
     <div class="sdpi-item">
       <div class="sdpi-item-label">Keep Updated</div>
       <div class="sdpi-item-child">
-        <input id="keep_updated" type="checkbox" class="sdProperty sdCheckbox" oninput="setSettings()">
-        <label for="keep_updated" class="sdpi-item-label"><span></span></label>
+        <select class="sdProperty" id="refresh_seconds" oninput="setSettings()">
+          <option value="0">Disabled</option>
+          <option value="100000000">0.1 Second</option>
+          <option value="500000000">0.5 Second</option>
+          <option value="1000000000">1 Second</option>
+          <option value="2000000000">2 Seconds</option>
+          <option value="5000000000">5 Seconds</option>
+        </select>
+        
       </div>
     </div>
     

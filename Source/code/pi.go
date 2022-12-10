@@ -1,6 +1,10 @@
 package sdnewtek
 
-import "github.com/FlowingSPDG/newtek-go"
+import (
+	"time"
+
+	"github.com/FlowingSPDG/newtek-go"
+)
 
 // ShortcutPI Property Inspector setting for Shortcut action
 type ShortcutPI struct {
@@ -27,15 +31,15 @@ func (p *ShortcutPI) Initialize() {
 
 // VideoPreviewPI Property Inspector setting for Video Thumbnail Preview
 type VideoPreviewPI struct {
-	Host        string `json:"host"`
-	User        string `json:"user"`
-	Password    string `json:"password"`
-	Name        string `json:"name"`
-	KeepUpdated bool   `json:"keep_updated"`
+	Host           string        `json:"host"`
+	User           string        `json:"user"`
+	Password       string        `json:"password"`
+	Name           string        `json:"name"`
+	RefreshSeconds time.Duration `json:"refresh_seconds,string"` // in Mili seconds
 }
 
 func (p *VideoPreviewPI) IsDefault() bool {
-	if p.Name == "" && p.Host == "" && p.User == "" && p.Password == "" {
+	if p.Name == "" && p.Host == "" && p.User == "" && p.Password == "" && p.RefreshSeconds <= 0 {
 		return true
 	}
 	return false
@@ -45,6 +49,7 @@ func (p *VideoPreviewPI) Initialize() {
 	p.User = "admin"
 	p.Password = "admin"
 	p.Name = "output1"
+	p.RefreshSeconds = time.Second
 }
 
 // ShortcutTCPPI Property Inspector setting for Shortcut action

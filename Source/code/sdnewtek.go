@@ -3,6 +3,7 @@ package sdnewtek
 import (
 	"context"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/FlowingSPDG/newtek-go"
@@ -33,7 +34,7 @@ type SDNewTek struct {
 
 	shortcutContexts    map[string]struct{}
 	shortcutTCPContexts map[string]struct{}
-	videoPreviewContext map[string]VideoPreviewPI
+	videoPreviewContext sync.Map
 }
 
 func NewSDNewTek(ctx context.Context, params streamdeck.RegistrationParams) *SDNewTek {
@@ -41,7 +42,7 @@ func NewSDNewTek(ctx context.Context, params streamdeck.RegistrationParams) *SDN
 		sd:                  nil,
 		shortcutContexts:    map[string]struct{}{},
 		shortcutTCPContexts: map[string]struct{}{},
-		videoPreviewContext: map[string]VideoPreviewPI{},
+		videoPreviewContext: sync.Map{},
 	}
 
 	client := streamdeck.NewClient(ctx, params)
@@ -61,12 +62,12 @@ func NewSDNewTek(ctx context.Context, params streamdeck.RegistrationParams) *SDN
 	actionVideoPreview := client.Action(ActionVideoPreview)
 	actionVideoPreview.RegisterHandler(streamdeck.WillAppear, ret.VideoPreviewWillAppearHandler)
 	actionVideoPreview.RegisterHandler(streamdeck.WillAppear, func(ctx context.Context, client *streamdeck.Client, event streamdeck.Event) error {
-		ret.videoPreviewContext[event.Context] = VideoPreviewPI{}
+		ret.videoPreviewContext.Store(event.Context, VideoPreviewPI{})
 		return nil
 	})
 	actionVideoPreview.RegisterHandler(streamdeck.KeyDown, ret.VideoPreviewKeyDownHandler)
 	actionVideoPreview.RegisterHandler(streamdeck.WillDisappear, func(ctx context.Context, client *streamdeck.Client, event streamdeck.Event) error {
-		delete(ret.videoPreviewContext, event.Context)
+		ret.videoPreviewContext.Delete(event.Context)
 		return nil
 	})
 	actionVideoPreview.RegisterHandler(streamdeck.DidReceiveSettings, ret.VideoPreviewDidReceiveSettingsHandler)
@@ -95,23 +96,28 @@ func (s *SDNewTek) Run(ctx context.Context) error {
 
 // videoPreviewGoroutine ctxはStreamDeckのcontextを使う
 func (s *SDNewTek) videoPreviewGoroutine(ctx context.Context) error {
+	// mapが競合しない範囲でループを続けている
+	// 負荷が高いかもしれない...
 	for {
-		time.Sleep(time.Second)
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
 		default:
-			for ctxStr, pi := range s.videoPreviewContext {
-				if !pi.KeepUpdated {
-					continue
+			s.videoPreviewContext.Range(func(key, value interface{}) bool {
+				ctxStr := key.(string)
+				pi := value.(VideoPreviewPI)
+				// 0秒以下の場合
+				if pi.RefreshSeconds <= 0 {
+					return true
 				}
+				time.Sleep(pi.RefreshSeconds)
 				ctx = sdcontext.WithContext(ctx, ctxStr)
 				c, err := newtek.NewClientV1(pi.Host, pi.User, pi.Password)
 				if err != nil {
 					msg := fmt.Sprintf("Failed to connect NewTek Client: %s", err)
 					s.sd.LogMessage(msg)
 					s.sd.ShowAlert(ctx)
-					return err
+					return true
 				}
 
 				img, err := c.VideoPreview(pi.Name, 144, 144, 25)
@@ -119,12 +125,19 @@ func (s *SDNewTek) videoPreviewGoroutine(ctx context.Context) error {
 					msg := fmt.Sprintf("Failed to send Shortcut to NewTek Client: %s", err)
 					s.sd.LogMessage(msg)
 					s.sd.ShowAlert(ctx)
-					return err
+					return true
 				}
 
-				i, _ := streamdeck.Image(img)
+				i, err := streamdeck.Image(img)
+				if err != nil {
+					msg := fmt.Sprintf("Failed to send convert preview image from NewTek Client: %s", err)
+					s.sd.LogMessage(msg)
+					s.sd.ShowAlert(ctx)
+					return true
+				}
 				s.sd.SetImage(ctx, i, streamdeck.HardwareAndSoftware)
-			}
+				return true
+			})
 		}
 	}
 }
