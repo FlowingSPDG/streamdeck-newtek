@@ -63,6 +63,20 @@ function websocketOnMessage(evt) {
     document.dispatchEvent(event);
 }
 
+function getKVElem(k,v) {
+    var parent = document.createElement('div')
+    var key = document.createElement('input');
+    key.value = k
+    key.text = k
+    var value = document.createElement('input');
+    value.value = v
+    value.text = v
+
+    parent.appendChild(key)
+    parent.appendChild(value)
+    return parent
+}
+
 function loadConfiguration(payload) {
     console.log('loadConfiguration');
     console.log(payload);
@@ -94,6 +108,17 @@ function loadConfiguration(payload) {
                     elem.appendChild(opt);
                 }
                 elem.value = payload[valueField];
+            }
+            else if (elem.classList.contains("sdObject")) { // object
+                var obj = payload[key];
+                // Remove all child
+                elem.innerHTML = '';
+
+                // Assign
+                Object.keys(obj).forEach(function (k) {
+                    let parent = getKVElem(k,obj[k])
+                    elem.appendChild(parent);
+                })
             }
             else if (elem.classList.contains("sdHTML")) { // HTML element
                 elem.innerHTML = payload[key];
@@ -131,6 +156,24 @@ function setSettings() {
                 elemFile.innerText = elem.value;
             }
             console.log("Save: " + key + "<=" + payload[key]);
+        }
+        else if (elem.classList.contains("sdObject")) { // object
+            // Init object
+            payload[key] = {}
+
+            // Loop child elements
+            var children = elem.children;
+            for (var i = 0; i < children.length; i++) {
+                let child = children[0]
+                let k = child.children[0]
+                let v = child.children[1]
+
+                let objKey = k.value
+                let objVal = v.value
+
+                payload[key][objKey]=objVal
+            }
+            console.log("Save : " + key + "<=" + JSON.stringify(payload[key]));
         }
         else if (elem.classList.contains("sdList")) { // Dynamic dropdown
             var valueField = elem.getAttribute("sdValueField");
