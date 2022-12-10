@@ -1,5 +1,7 @@
 package sdnewtek
 
+import "github.com/FlowingSPDG/newtek-go"
+
 // ShortcutPI Property Inspector setting for Shortcut action
 type ShortcutPI struct {
 	Shortcut string `json:"shortcut"`
@@ -42,4 +44,33 @@ func (p *VideoPreviewPI) Initialize() {
 	p.User = "admin"
 	p.Password = "admin"
 	p.Name = "output1"
+}
+
+// ShortcutTCPPI Property Inspector setting for Shortcut action
+type ShortcutTCPPI struct {
+	Shortcut string `json:"shortcut"`
+	Host     string `json:"host"`
+	Value    string `json:"value"`
+}
+
+func (p *ShortcutTCPPI) IsDefault() bool {
+	if p.Shortcut == "" && p.Host == "" && p.Value == "" {
+		return true
+	}
+	return false
+}
+
+func (p *ShortcutTCPPI) Initialize() {
+	//
+}
+
+func (p *ShortcutTCPPI) ToShortcuts() newtek.Shortcuts {
+	return newtek.Shortcuts{
+		Shortcut: []newtek.Shortcut{
+			{
+				Name:  p.Shortcut,
+				Value: p.Value,
+			},
+		},
+	}
 }

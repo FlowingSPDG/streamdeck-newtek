@@ -13,10 +13,13 @@ const (
 
 // Actions
 const (
-	// ActionCut Cut action
-	ActionShortcut = "dev.flowingspdg.newtek.shortcut"
-
+	// ActionShortcut Shortcut Action
+	ActionShortcut = "dev.flowingspdg.newtek.shortcuthttp"
+	// ActionVideoPreview VideoPreview action
 	ActionVideoPreview = "dev.flowingspdg.newtek.videopreview"
+
+	// ActionShortcutTCP Perform action thru TCP
+	ActionShortcutTCP = "dev.flowingspdg.newtek.shortcuttcp"
 )
 
 type SDNewTek struct {
@@ -25,6 +28,7 @@ type SDNewTek struct {
 	sd *streamdeck.Client
 
 	shortcutContexts    map[string]struct{}
+	shortcutTCPContexts map[string]struct{}
 	videoPreviewContext map[string]struct{}
 }
 
@@ -32,6 +36,7 @@ func NewSDNewTek(ctx context.Context, params streamdeck.RegistrationParams) *SDN
 	ret := &SDNewTek{
 		sd:                  nil,
 		shortcutContexts:    map[string]struct{}{},
+		shortcutTCPContexts: map[string]struct{}{},
 		videoPreviewContext: map[string]struct{}{},
 	}
 
@@ -58,6 +63,18 @@ func NewSDNewTek(ctx context.Context, params streamdeck.RegistrationParams) *SDN
 	actionVideoPreview.RegisterHandler(streamdeck.KeyDown, ret.VideoPreviewKeyDownHandler)
 	actionVideoPreview.RegisterHandler(streamdeck.WillDisappear, func(ctx context.Context, client *streamdeck.Client, event streamdeck.Event) error {
 		delete(ret.videoPreviewContext, event.Context)
+		return nil
+	})
+
+	actionShortcutTCP := client.Action(ActionShortcutTCP)
+	actionShortcutTCP.RegisterHandler(streamdeck.WillAppear, ret.ShortcutTCPWillAppearHandler)
+	actionShortcutTCP.RegisterHandler(streamdeck.WillAppear, func(ctx context.Context, client *streamdeck.Client, event streamdeck.Event) error {
+		ret.shortcutTCPContexts[event.Context] = struct{}{}
+		return nil
+	})
+	actionShortcutTCP.RegisterHandler(streamdeck.KeyDown, ret.ShortcutTCPKeyDownHandler)
+	actionShortcutTCP.RegisterHandler(streamdeck.WillDisappear, func(ctx context.Context, client *streamdeck.Client, event streamdeck.Event) error {
+		delete(ret.shortcutTCPContexts, event.Context)
 		return nil
 	})
 

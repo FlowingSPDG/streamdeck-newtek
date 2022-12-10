@@ -1,5 +1,9 @@
 github.com/FlowingSPDG/newtek-go v0.0.0-20221120082818-c91298b381a7 h1:94+aWLW1Li76iqPGsUAEg7SU7zf9UmfrAeH55wtOX4g=
 github.com/FlowingSPDG/newtek-go v0.0.0-20221120082818-c91298b381a7/go.mod h1:ff2nWnFbPJz+LmB2Zezp7vXniWDb+BmLAG60nnpOyWQ=
+github.com/FlowingSPDG/newtek-go v0.0.0-20221210114031-da05523249e9 h1:cg5Ap76GkGxCXpqTjicup2JMxw353UXCnYnhHFrm9gY=
+github.com/FlowingSPDG/newtek-go v0.0.0-20221210114031-da05523249e9/go.mod h1:ff2nWnFbPJz+LmB2Zezp7vXniWDb+BmLAG60nnpOyWQ=
+github.com/FlowingSPDG/newtek-go v0.0.0-20221210114803-a47565f45bc9 h1:5L0A1Xt0DQ1BPpLwpkF/fHYQQPKZKiWOImnjJiK98uA=
+github.com/FlowingSPDG/newtek-go v0.0.0-20221210114803-a47565f45bc9/go.mod h1:ff2nWnFbPJz+LmB2Zezp7vXniWDb+BmLAG60nnpOyWQ=
 github.com/FlowingSPDG/streamdeck v0.0.0-20221208184904-f88faf81846f h1:5ziH1yvXWEtmsQKOjKpeEPMOII72eHNbEfiuujOO+Fw=
 github.com/FlowingSPDG/streamdeck v0.0.0-20221208184904-f88faf81846f/go.mod h1:3p+LyOMQ6ypvALF6fF979kB5xD8iFzI42vKl3evZo/Q=
 github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d/go.mod h1:3eOhrUMpNV+6aFIbp5/iudMxNCF27Vw2OZgy4xEx0Fg=

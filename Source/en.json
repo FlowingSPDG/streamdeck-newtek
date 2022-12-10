@@ -1,8 +1,0 @@
-{
-  "Description": "Un-official Streamdeck Plugin for NewTek Video products", 
-  "Name": "newTek Plugin", 
-  "dev.flowingspdg.newtek.shortcut": {
-    "Name": "Shortcut", 
-    "Tooltip": "Send shortcut"
-  }
-}

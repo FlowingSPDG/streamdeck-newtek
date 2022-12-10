@@ -1,7 +1,7 @@
 {
   "Actions": [
     {
-      "Name": "NewTek Shortcut",
+      "Name": "NewTek Shortcut(HTTP)",
       "States": [
         {
           "Image": "images/icon",
@@ -9,10 +9,25 @@
           "FontSize": "24"
         }
       ],
-      "PropertyInspectorPath": "inspector/shortcut.html", 
+      "PropertyInspectorPath": "inspector/shortcut_http.html", 
       "SupportedInMultiActions": true,
-      "Tooltip": "send NewTek shortcut",
-      "UUID": "dev.flowingspdg.newtek.shortcut",
+      "Tooltip": "send NewTek shortcut through HTTP",
+      "UUID": "dev.flowingspdg.newtek.shortcuthttp",
+      "Icon": "images/icon" 
+    },
+    {
+      "Name": "NewTek Shortcut(TCP)",
+      "States": [
+        {
+          "Image": "images/icon",
+          "TitleAlignment": "middle",
+          "FontSize": "24"
+        }
+      ],
+      "PropertyInspectorPath": "inspector/shortcut_tcp.html", 
+      "SupportedInMultiActions": true,
+      "Tooltip": "send NewTek shortcut(TCP)",
+      "UUID": "dev.flowingspdg.newtek.shortcuttcp",
       "Icon": "images/icon" 
     },
     {

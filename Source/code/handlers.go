@@ -158,3 +158,76 @@ func (s *SDNewTek) VideoPreviewKeyDownHandler(ctx context.Context, client *strea
 	client.LogMessage(msg)
 	return nil
 }
+
+func (s *SDNewTek) ShortcutTCPWillAppearHandler(ctx context.Context, client *streamdeck.Client, event streamdeck.Event) error {
+	payload := streamdeck.WillAppearPayload{}
+	if err := json.Unmarshal(event.Payload, &payload); err != nil {
+		msg := fmt.Sprintf("Failed to unmarshal WillAppear event payload: %s", err)
+		client.LogMessage(msg)
+		client.ShowAlert(ctx)
+		return err
+	}
+
+	settings := ShortcutTCPPI{}
+	if err := json.Unmarshal(payload.Settings, &settings); err != nil {
+		// エラー表示
+		msg := fmt.Sprintf("Failed to unmarshal WillAppear event payload: %s", err)
+		client.LogMessage(msg)
+		client.ShowAlert(ctx)
+
+		// パースエラーが起きた時点で初期値に直す
+		settings.Initialize()
+		client.SetSettings(ctx, settings)
+	}
+
+	if settings.IsDefault() {
+		settings.Initialize()
+		client.SetSettings(ctx, settings)
+	}
+
+	msg := fmt.Sprintf("Context %s WillAppear with settings :%v", event.Context, settings)
+	client.LogMessage(msg)
+	return nil
+}
+
+// KeyDownHandler keyDown handler
+func (s *SDNewTek) ShortcutTCPKeyDownHandler(ctx context.Context, client *streamdeck.Client, event streamdeck.Event) error {
+	payload := streamdeck.KeyDownPayload{}
+	if err := json.Unmarshal(event.Payload, &payload); err != nil {
+		msg := fmt.Sprintf("Failed to unmarshal KeyDown event payload: %s", err)
+		client.LogMessage(msg)
+		client.ShowAlert(ctx)
+		return err
+	}
+
+	pi := ShortcutTCPPI{}
+	if err := json.Unmarshal(payload.Settings, &pi); err != nil {
+		msg := fmt.Sprintf("Failed to unmarshal KeyDown settings payload: %s", err)
+		client.LogMessage(msg)
+		client.ShowAlert(ctx)
+		return err
+	}
+
+	c, err := newtek.NewClientV1TCP(pi.Host)
+	if err != nil {
+		msg := fmt.Sprintf("Failed to connect NewTek Client: %s", err)
+		client.LogMessage(msg)
+		client.ShowAlert(ctx)
+		return err
+	}
+	defer c.Close()
+
+	msg := fmt.Sprintf("Sending shortcut command %v", pi)
+	client.LogMessage(msg)
+	if err := c.Shortcut(pi.ToShortcuts()); err != nil {
+		msg := fmt.Sprintf("Failed to send Shortcut to NewTek Client: %s", err)
+		client.LogMessage(msg)
+		client.ShowAlert(ctx)
+		return err
+	}
+
+	msg = fmt.Sprintf("Sent command %v", pi)
+	client.LogMessage(msg)
+
+	return client.ShowOk(ctx)
+}
