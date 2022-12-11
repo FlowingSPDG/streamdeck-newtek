@@ -119,7 +119,7 @@ func (c *cacher) storeCache(key cacherKey, img image.Image) {
 func (s *SDNewTek) videoPreviewGoroutine(ctx context.Context) error {
 	// それぞれ独立のgoroutineでループしないと処理が止まる
 	for {
-		time.Sleep(time.Second)
+		time.Sleep(time.Second / 4)
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
@@ -208,8 +208,6 @@ func (s *SDNewTek) videoPreviewGoroutine(ctx context.Context) error {
 
 				// cropする場合新規取得
 				if doCrop {
-					msg := fmt.Sprintf("Image size(pre-crop): %dx%d", img.Bounds().Dx(), img.Bounds().Dy())
-					s.sd.LogMessage(msg)
 					var err error
 					img, err = cutter.Crop(img, cutter.Config{
 						Width:  buttonSize,
@@ -223,9 +221,6 @@ func (s *SDNewTek) videoPreviewGoroutine(ctx context.Context) error {
 						s.sd.ShowAlert(sctx)
 						return true
 					}
-
-					msg = fmt.Sprintf("Image size(post-crop): %dx%d", img.Bounds().Dx(), img.Bounds().Dy())
-					s.sd.LogMessage(msg)
 				}
 
 				i, err := streamdeck.Image(img)
