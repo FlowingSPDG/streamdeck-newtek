@@ -136,7 +136,6 @@ func (s *SDNewTek) videoPreviewGoroutine(ctx context.Context) error {
 					return true
 				}
 
-				doCrop := true
 				anchor := image.Point{}
 				var img image.Image
 				const buttonSize = 144
@@ -171,6 +170,7 @@ func (s *SDNewTek) videoPreviewGoroutine(ctx context.Context) error {
 					}, img)
 				}
 
+				doCrop := true
 				switch pi.Segment {
 				case 1:
 					anchor = image.Point{X: buttonSize * 0, Y: buttonSize * 0}
