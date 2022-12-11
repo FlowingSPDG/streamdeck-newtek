@@ -3,12 +3,14 @@ package sdnewtek
 import (
 	"context"
 	"fmt"
+	"image"
 	"sync"
 	"time"
 
 	"github.com/FlowingSPDG/newtek-go"
 	"github.com/FlowingSPDG/streamdeck"
 	sdcontext "github.com/FlowingSPDG/streamdeck/context"
+	"github.com/oliamb/cutter"
 )
 
 const (
@@ -61,11 +63,6 @@ func NewSDNewTek(ctx context.Context, params streamdeck.RegistrationParams) *SDN
 
 	actionVideoPreview := client.Action(ActionVideoPreview)
 	actionVideoPreview.RegisterHandler(streamdeck.WillAppear, ret.VideoPreviewWillAppearHandler)
-	actionVideoPreview.RegisterHandler(streamdeck.WillAppear, func(ctx context.Context, client *streamdeck.Client, event streamdeck.Event) error {
-		ret.videoPreviewContext.Store(event.Context, VideoPreviewPI{})
-		return nil
-	})
-	actionVideoPreview.RegisterHandler(streamdeck.KeyDown, ret.VideoPreviewKeyDownHandler)
 	actionVideoPreview.RegisterHandler(streamdeck.WillDisappear, func(ctx context.Context, client *streamdeck.Client, event streamdeck.Event) error {
 		ret.videoPreviewContext.Delete(event.Context)
 		return nil
@@ -94,48 +91,151 @@ func (s *SDNewTek) Run(ctx context.Context) error {
 	return s.sd.Run()
 }
 
-// videoPreviewGoroutine ctxはStreamDeckのcontextを使う
+type cacher struct {
+	m sync.Map
+}
+
+type cacherKey struct {
+	host string
+	name string
+}
+
+func (c *cacher) getCache(key cacherKey) (image.Image, bool) {
+	v, ok := c.m.Load(key)
+	if !ok {
+		return nil, ok
+	}
+	i, o := v.(image.Image)
+	if !o {
+		return nil, o
+	}
+	return i, ok
+}
+
+func (c *cacher) storeCache(key cacherKey, img image.Image) {
+	c.m.Store(key, img)
+}
+
 func (s *SDNewTek) videoPreviewGoroutine(ctx context.Context) error {
-	// mapが競合しない範囲でループを続けている
-	// 負荷が高いかもしれない...
+	// それぞれ独立のgoroutineでループしないと処理が止まる
 	for {
+		time.Sleep(time.Second)
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
 		default:
+			// map-based Image cacher
+			cs := cacher{}
 			s.videoPreviewContext.Range(func(key, value interface{}) bool {
 				ctxStr := key.(string)
 				pi := value.(VideoPreviewPI)
-				// 0秒以下の場合
-				if pi.RefreshSeconds <= 0 {
-					return true
-				}
-				time.Sleep(pi.RefreshSeconds)
-				ctx = sdcontext.WithContext(ctx, ctxStr)
-				c, err := newtek.NewClientV1(pi.Host, pi.User, pi.Password)
-				if err != nil {
-					msg := fmt.Sprintf("Failed to connect NewTek Client: %s", err)
-					s.sd.LogMessage(msg)
-					s.sd.ShowAlert(ctx)
+				sctx := sdcontext.WithContext(ctx, ctxStr)
+
+				// Hostなどが指定されていない場合止める
+				if pi.Host == "" || pi.Name == "" {
 					return true
 				}
 
-				img, err := c.VideoPreview(pi.Name, 144, 144, 25)
-				if err != nil {
-					msg := fmt.Sprintf("Failed to send Shortcut to NewTek Client: %s", err)
+				doCrop := true
+				anchor := image.Point{}
+				var img image.Image
+				const buttonSize = 144
+
+				cache, ok := cs.getCache(cacherKey{
+					host: pi.Host,
+					name: pi.Name,
+				})
+				if ok {
+					// Use cache
+					img = cache
+				} else {
+					// Fetch new image
+					c, err := newtek.NewClientV1(pi.Host, pi.User, pi.Password)
+					if err != nil {
+						msg := fmt.Sprintf("Failed to connect NewTek Client: %s", err)
+						s.sd.LogMessage(msg)
+						s.sd.ShowAlert(sctx)
+						return true
+					}
+					img, err = c.VideoPreview(pi.Name, buttonSize*5, buttonSize*3, 25)
+					if err != nil {
+						msg := fmt.Sprintf("Failed to send Shortcut to NewTek Client: %s", err)
+						s.sd.LogMessage(msg)
+						s.sd.ShowAlert(sctx)
+						return true
+					}
+
+					cs.storeCache(cacherKey{
+						host: pi.Host,
+						name: pi.Name,
+					}, img)
+				}
+
+				switch pi.Segment {
+				case 1:
+					anchor = image.Point{X: buttonSize * 0, Y: buttonSize * 0}
+				case 2:
+					anchor = image.Point{X: buttonSize * 1, Y: buttonSize * 0}
+				case 3:
+					anchor = image.Point{X: buttonSize * 2, Y: buttonSize * 0}
+				case 4:
+					anchor = image.Point{X: buttonSize * 3, Y: buttonSize * 0}
+				case 5:
+					anchor = image.Point{X: buttonSize * 4, Y: buttonSize * 0}
+				case 6:
+					anchor = image.Point{X: buttonSize * 0, Y: buttonSize * 1}
+				case 7:
+					anchor = image.Point{X: buttonSize * 1, Y: buttonSize * 1}
+				case 8:
+					anchor = image.Point{X: buttonSize * 2, Y: buttonSize * 1}
+				case 9:
+					anchor = image.Point{X: buttonSize * 3, Y: buttonSize * 1}
+				case 10:
+					anchor = image.Point{X: buttonSize * 4, Y: buttonSize * 1}
+				case 11:
+					anchor = image.Point{X: buttonSize * 0, Y: buttonSize * 2}
+				case 12:
+					anchor = image.Point{X: buttonSize * 1, Y: buttonSize * 2}
+				case 13:
+					anchor = image.Point{X: buttonSize * 2, Y: buttonSize * 2}
+				case 14:
+					anchor = image.Point{X: buttonSize * 3, Y: buttonSize * 2}
+				case 15:
+					anchor = image.Point{X: buttonSize * 4, Y: buttonSize * 2}
+				default:
+					doCrop = false
+				}
+
+				// cropする場合新規取得
+				if doCrop {
+					msg := fmt.Sprintf("Image size(pre-crop): %dx%d", img.Bounds().Dx(), img.Bounds().Dy())
 					s.sd.LogMessage(msg)
-					s.sd.ShowAlert(ctx)
-					return true
+					var err error
+					img, err = cutter.Crop(img, cutter.Config{
+						Width:  buttonSize,
+						Height: buttonSize,
+						Anchor: anchor,
+						Mode:   cutter.TopLeft,
+					})
+					if err != nil {
+						msg := fmt.Sprintf("Failed to send Shortcut to NewTek Client: %s", err)
+						s.sd.LogMessage(msg)
+						s.sd.ShowAlert(sctx)
+						return true
+					}
+
+					msg = fmt.Sprintf("Image size(post-crop): %dx%d", img.Bounds().Dx(), img.Bounds().Dy())
+					s.sd.LogMessage(msg)
 				}
 
 				i, err := streamdeck.Image(img)
 				if err != nil {
-					msg := fmt.Sprintf("Failed to send convert preview image from NewTek Client: %s", err)
+					msg := fmt.Sprintf("Failed to convert preview image for NewTek Client: %s", err)
 					s.sd.LogMessage(msg)
-					s.sd.ShowAlert(ctx)
+					s.sd.ShowAlert(sctx)
 					return true
 				}
-				s.sd.SetImage(ctx, i, streamdeck.HardwareAndSoftware)
+				go s.sd.SetImage(sctx, i, streamdeck.HardwareAndSoftware)
 				return true
 			})
 		}

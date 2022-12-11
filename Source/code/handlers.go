@@ -110,51 +110,9 @@ func (s *SDNewTek) VideoPreviewWillAppearHandler(ctx context.Context, client *st
 		settings.Initialize()
 		client.SetSettings(ctx, settings)
 	}
+	s.videoPreviewContext.Store(event.Context, settings)
 
 	msg := fmt.Sprintf("Context %s WillAppear with settings :%v", event.Context, settings)
-	client.LogMessage(msg)
-	return nil
-}
-
-// KeyDownHandler keyDown handler
-func (s *SDNewTek) VideoPreviewKeyDownHandler(ctx context.Context, client *streamdeck.Client, event streamdeck.Event) error {
-	payload := streamdeck.KeyDownPayload{}
-	if err := json.Unmarshal(event.Payload, &payload); err != nil {
-		msg := fmt.Sprintf("Failed to unmarshal KeyDown event payload: %s", err)
-		client.LogMessage(msg)
-		client.ShowAlert(ctx)
-		return err
-	}
-
-	pi := VideoPreviewPI{}
-	if err := json.Unmarshal(payload.Settings, &pi); err != nil {
-		msg := fmt.Sprintf("Failed to unmarshal KeyDown settings payload: %s", err)
-		client.LogMessage(msg)
-		client.ShowAlert(ctx)
-		return err
-	}
-
-	c, err := newtek.NewClientV1(pi.Host, pi.User, pi.Password)
-	if err != nil {
-		msg := fmt.Sprintf("Failed to connect NewTek Client: %s", err)
-		client.LogMessage(msg)
-		client.ShowAlert(ctx)
-		return err
-	}
-
-	msg := fmt.Sprintf("Sending VideoPreview command %v", pi)
-	client.LogMessage(msg)
-	img, err := c.VideoPreview(pi.Name, 144, 144, 25)
-	if err != nil {
-		msg := fmt.Sprintf("Failed to send Shortcut to NewTek Client: %s", err)
-		client.LogMessage(msg)
-		client.ShowAlert(ctx)
-		return err
-	}
-	i, _ := streamdeck.Image(img)
-	client.SetImage(ctx, i, streamdeck.HardwareAndSoftware)
-
-	msg = fmt.Sprintf("Set image %v", pi)
 	client.LogMessage(msg)
 	return nil
 }

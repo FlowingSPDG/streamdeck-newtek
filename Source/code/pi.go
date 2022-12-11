@@ -1,8 +1,6 @@
 package sdnewtek
 
 import (
-	"time"
-
 	"github.com/FlowingSPDG/newtek-go"
 )
 
@@ -31,15 +29,17 @@ func (p *ShortcutPI) Initialize() {
 
 // VideoPreviewPI Property Inspector setting for Video Thumbnail Preview
 type VideoPreviewPI struct {
-	Host           string        `json:"host"`
-	User           string        `json:"user"`
-	Password       string        `json:"password"`
-	Name           string        `json:"name"`
-	RefreshSeconds time.Duration `json:"refresh_seconds,string"` // in Mili seconds
+	Host     string `json:"host"`
+	User     string `json:"user"`
+	Password string `json:"password"`
+	Name     string `json:"name"`
+
+	// If you use full-screen...
+	Segment int `json:"segment,string"` // 1~15, Left-up to Right-bottom. 0 to disable
 }
 
 func (p *VideoPreviewPI) IsDefault() bool {
-	if p.Name == "" && p.Host == "" && p.User == "" && p.Password == "" && p.RefreshSeconds <= 0 {
+	if p.Name == "" && p.Host == "" && p.User == "" && p.Password == "" && p.Segment == 0 {
 		return true
 	}
 	return false
@@ -49,7 +49,7 @@ func (p *VideoPreviewPI) Initialize() {
 	p.User = "admin"
 	p.Password = "admin"
 	p.Name = "output1"
-	p.RefreshSeconds = time.Second
+	p.Segment = 0
 }
 
 // ShortcutTCPPI Property Inspector setting for Shortcut action
