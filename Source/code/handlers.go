@@ -9,8 +9,9 @@ import (
 	"github.com/FlowingSPDG/streamdeck"
 )
 
+// ShortcutWillAppearHandler WillAppear handler for ShortcutHTTP
 func (s *SDNewTek) ShortcutWillAppearHandler(ctx context.Context, client *streamdeck.Client, event streamdeck.Event) error {
-	payload := streamdeck.WillAppearPayload{}
+	payload := streamdeck.WillAppearPayload[ShortcutPI]{}
 	if err := json.Unmarshal(event.Payload, &payload); err != nil {
 		msg := fmt.Sprintf("Failed to unmarshal WillAppear event payload: %s", err)
 		client.LogMessage(msg)
@@ -18,31 +19,19 @@ func (s *SDNewTek) ShortcutWillAppearHandler(ctx context.Context, client *stream
 		return err
 	}
 
-	settings := ShortcutPI{}
-	if err := json.Unmarshal(payload.Settings, &settings); err != nil {
-		// エラー表示
-		msg := fmt.Sprintf("Failed to unmarshal WillAppear event payload: %s", err)
-		client.LogMessage(msg)
-		client.ShowAlert(ctx)
-
-		// パースエラーが起きた時点で初期値に直す
-		settings.Initialize()
-		client.SetSettings(ctx, settings)
+	if payload.Settings.IsDefault() {
+		payload.Settings.Initialize()
+		client.SetSettings(ctx, payload.Settings)
 	}
 
-	if settings.IsDefault() {
-		settings.Initialize()
-		client.SetSettings(ctx, settings)
-	}
-
-	msg := fmt.Sprintf("Context %s WillAppear with settings :%v", event.Context, settings)
+	msg := fmt.Sprintf("Context %s WillAppear with settings :%v", event.Context, payload.Settings)
 	client.LogMessage(msg)
 	return nil
 }
 
-// KeyDownHandler keyDown handler
+// ShortcutKeyDownHandler keyDown handler
 func (s *SDNewTek) ShortcutKeyDownHandler(ctx context.Context, client *streamdeck.Client, event streamdeck.Event) error {
-	payload := streamdeck.KeyDownPayload{}
+	payload := streamdeck.KeyDownPayload[ShortcutPI]{}
 	if err := json.Unmarshal(event.Payload, &payload); err != nil {
 		msg := fmt.Sprintf("Failed to unmarshal KeyDown event payload: %s", err)
 		client.LogMessage(msg)
@@ -50,15 +39,7 @@ func (s *SDNewTek) ShortcutKeyDownHandler(ctx context.Context, client *streamdec
 		return err
 	}
 
-	pi := ShortcutPI{}
-	if err := json.Unmarshal(payload.Settings, &pi); err != nil {
-		msg := fmt.Sprintf("Failed to unmarshal KeyDown settings payload: %s", err)
-		client.LogMessage(msg)
-		client.ShowAlert(ctx)
-		return err
-	}
-
-	c, err := newtek.NewClientV1(pi.Host, pi.User, pi.Password)
+	c, err := newtek.NewClientV1(payload.Settings.Host, payload.Settings.User, payload.Settings.Password)
 	if err != nil {
 		msg := fmt.Sprintf("Failed to connect NewTek Client: %s", err)
 		client.LogMessage(msg)
@@ -67,26 +48,27 @@ func (s *SDNewTek) ShortcutKeyDownHandler(ctx context.Context, client *streamdec
 	}
 
 	kv := make(map[string]string)
-	if pi.Key != "" {
-		kv[pi.Key] = pi.Value
+	if payload.Settings.Key != "" {
+		kv[payload.Settings.Key] = payload.Settings.Value
 	}
-	msg := fmt.Sprintf("Sending shortcut command %v", pi)
+	msg := fmt.Sprintf("Sending shortcut command %v", payload.Settings)
 	client.LogMessage(msg)
-	if err := c.ShortcutHTTP(pi.Shortcut, kv); err != nil {
-		msg := fmt.Sprintf("Failed to send Shortcut to NewTek Client: %s", err)
+	if err := c.ShortcutHTTP(payload.Settings.Shortcut, kv); err != nil {
+		msg := fmt.Sprintf("Failed to send Shortcut(HTTP) to NewTek Client: %s", err)
 		client.LogMessage(msg)
 		client.ShowAlert(ctx)
 		return err
 	}
 
-	msg = fmt.Sprintf("Sent command %v", pi)
+	msg = fmt.Sprintf("Sent command %v", payload.Settings)
 	client.LogMessage(msg)
 
 	return client.ShowOk(ctx)
 }
 
+// VideoPreviewWillAppearHandler WillAppear handler for VideoPreview
 func (s *SDNewTek) VideoPreviewWillAppearHandler(ctx context.Context, client *streamdeck.Client, event streamdeck.Event) error {
-	payload := streamdeck.WillAppearPayload{}
+	payload := streamdeck.WillAppearPayload[VideoPreviewPI]{}
 	if err := json.Unmarshal(event.Payload, &payload); err != nil {
 		msg := fmt.Sprintf("Failed to unmarshal WillAppear event payload: %s", err)
 		client.LogMessage(msg)
@@ -94,31 +76,20 @@ func (s *SDNewTek) VideoPreviewWillAppearHandler(ctx context.Context, client *st
 		return err
 	}
 
-	settings := VideoPreviewPI{}
-	if err := json.Unmarshal(payload.Settings, &settings); err != nil {
-		// エラー表示
-		msg := fmt.Sprintf("Failed to unmarshal WillAppear event payload: %s", err)
-		client.LogMessage(msg)
-		client.ShowAlert(ctx)
-
-		// パースエラーが起きた時点で初期値に直す
-		settings.Initialize()
-		client.SetSettings(ctx, settings)
+	if payload.Settings.IsDefault() {
+		payload.Settings.Initialize()
+		client.SetSettings(ctx, payload.Settings)
 	}
+	s.videoPreviewContext.Store(event.Context, payload.Settings)
 
-	if settings.IsDefault() {
-		settings.Initialize()
-		client.SetSettings(ctx, settings)
-	}
-	s.videoPreviewContext.Store(event.Context, settings)
-
-	msg := fmt.Sprintf("Context %s WillAppear with settings :%v", event.Context, settings)
+	msg := fmt.Sprintf("Context %s WillAppear with settings :%v", event.Context, payload.Settings)
 	client.LogMessage(msg)
 	return nil
 }
 
+// ShortcutTCPWillAppearHandler WillAppear handler for ShortcutTCP
 func (s *SDNewTek) ShortcutTCPWillAppearHandler(ctx context.Context, client *streamdeck.Client, event streamdeck.Event) error {
-	payload := streamdeck.WillAppearPayload{}
+	payload := streamdeck.WillAppearPayload[ShortcutTCPPI]{}
 	if err := json.Unmarshal(event.Payload, &payload); err != nil {
 		msg := fmt.Sprintf("Failed to unmarshal WillAppear event payload: %s", err)
 		client.LogMessage(msg)
@@ -126,31 +97,19 @@ func (s *SDNewTek) ShortcutTCPWillAppearHandler(ctx context.Context, client *str
 		return err
 	}
 
-	settings := ShortcutTCPPI{}
-	if err := json.Unmarshal(payload.Settings, &settings); err != nil {
-		// エラー表示
-		msg := fmt.Sprintf("Failed to unmarshal WillAppear event payload: %s", err)
-		client.LogMessage(msg)
-		client.ShowAlert(ctx)
-
-		// パースエラーが起きた時点で初期値に直す
-		settings.Initialize()
-		client.SetSettings(ctx, settings)
+	if payload.Settings.IsDefault() {
+		payload.Settings.Initialize()
+		client.SetSettings(ctx, payload.Settings)
 	}
 
-	if settings.IsDefault() {
-		settings.Initialize()
-		client.SetSettings(ctx, settings)
-	}
-
-	msg := fmt.Sprintf("Context %s WillAppear with settings :%v", event.Context, settings)
+	msg := fmt.Sprintf("Context %s WillAppear with settings :%v", event.Context, payload.Settings)
 	client.LogMessage(msg)
 	return nil
 }
 
-// KeyDownHandler keyDown handler
+// ShortcutTCPKeyDownHandler keyDown handler
 func (s *SDNewTek) ShortcutTCPKeyDownHandler(ctx context.Context, client *streamdeck.Client, event streamdeck.Event) error {
-	payload := streamdeck.KeyDownPayload{}
+	payload := streamdeck.KeyDownPayload[ShortcutTCPPI]{}
 	if err := json.Unmarshal(event.Payload, &payload); err != nil {
 		msg := fmt.Sprintf("Failed to unmarshal KeyDown event payload: %s", err)
 		client.LogMessage(msg)
@@ -158,15 +117,7 @@ func (s *SDNewTek) ShortcutTCPKeyDownHandler(ctx context.Context, client *stream
 		return err
 	}
 
-	pi := ShortcutTCPPI{}
-	if err := json.Unmarshal(payload.Settings, &pi); err != nil {
-		msg := fmt.Sprintf("Failed to unmarshal KeyDown settings payload: %s", err)
-		client.LogMessage(msg)
-		client.ShowAlert(ctx)
-		return err
-	}
-
-	c, err := newtek.NewClientV1TCP(pi.Host)
+	c, err := newtek.NewClientV1TCP(payload.Settings.Host)
 	if err != nil {
 		msg := fmt.Sprintf("Failed to connect NewTek Client: %s", err)
 		client.LogMessage(msg)
@@ -175,23 +126,24 @@ func (s *SDNewTek) ShortcutTCPKeyDownHandler(ctx context.Context, client *stream
 	}
 	defer c.Close()
 
-	msg := fmt.Sprintf("Sending shortcut command %v", pi)
+	msg := fmt.Sprintf("Sending shortcut command %v", payload.Settings)
 	client.LogMessage(msg)
-	if err := c.Shortcut(pi.ToShortcuts()); err != nil {
-		msg := fmt.Sprintf("Failed to send Shortcut to NewTek Client: %s", err)
+	if err := c.Shortcut(payload.Settings.ToShortcuts()); err != nil {
+		msg := fmt.Sprintf("Failed to send Shortcut(TCP) to NewTek Client: %s", err)
 		client.LogMessage(msg)
 		client.ShowAlert(ctx)
 		return err
 	}
 
-	msg = fmt.Sprintf("Sent command %v", pi)
+	msg = fmt.Sprintf("Sent command %v", payload.Settings)
 	client.LogMessage(msg)
 
 	return client.ShowOk(ctx)
 }
 
+// VideoPreviewDidReceiveSettingsHandler DidReceiveSettingsHandler for VideoPreview
 func (s *SDNewTek) VideoPreviewDidReceiveSettingsHandler(ctx context.Context, client *streamdeck.Client, event streamdeck.Event) error {
-	payload := streamdeck.DidReceiveGlobalSettingsPayload{}
+	payload := streamdeck.DidReceiveGlobalSettingsPayload[VideoPreviewPI]{}
 	if err := json.Unmarshal(event.Payload, &payload); err != nil {
 		msg := fmt.Sprintf("Failed to unmarshal KeyDown event payload: %s", err)
 		client.LogMessage(msg)
@@ -199,14 +151,6 @@ func (s *SDNewTek) VideoPreviewDidReceiveSettingsHandler(ctx context.Context, cl
 		return err
 	}
 
-	pi := VideoPreviewPI{}
-	if err := json.Unmarshal(payload.Settings, &pi); err != nil {
-		msg := fmt.Sprintf("Failed to unmarshal KeyDown settings payload: %s", err)
-		client.LogMessage(msg)
-		client.ShowAlert(ctx)
-		return err
-	}
-
-	s.videoPreviewContext.Store(event.Context, pi)
+	s.videoPreviewContext.Store(event.Context, payload.Settings)
 	return nil
 }

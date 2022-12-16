@@ -1,16 +1,13 @@
-github.com/FlowingSPDG/newtek-go v0.0.0-20221120082818-c91298b381a7 h1:94+aWLW1Li76iqPGsUAEg7SU7zf9UmfrAeH55wtOX4g=
-github.com/FlowingSPDG/newtek-go v0.0.0-20221120082818-c91298b381a7/go.mod h1:ff2nWnFbPJz+LmB2Zezp7vXniWDb+BmLAG60nnpOyWQ=
-github.com/FlowingSPDG/newtek-go v0.0.0-20221210114031-da05523249e9 h1:cg5Ap76GkGxCXpqTjicup2JMxw353UXCnYnhHFrm9gY=
-github.com/FlowingSPDG/newtek-go v0.0.0-20221210114031-da05523249e9/go.mod h1:ff2nWnFbPJz+LmB2Zezp7vXniWDb+BmLAG60nnpOyWQ=
 github.com/FlowingSPDG/newtek-go v0.0.0-20221210114803-a47565f45bc9 h1:5L0A1Xt0DQ1BPpLwpkF/fHYQQPKZKiWOImnjJiK98uA=
 github.com/FlowingSPDG/newtek-go v0.0.0-20221210114803-a47565f45bc9/go.mod h1:ff2nWnFbPJz+LmB2Zezp7vXniWDb+BmLAG60nnpOyWQ=
-github.com/FlowingSPDG/streamdeck v0.0.0-20221208184904-f88faf81846f h1:5ziH1yvXWEtmsQKOjKpeEPMOII72eHNbEfiuujOO+Fw=
-github.com/FlowingSPDG/streamdeck v0.0.0-20221208184904-f88faf81846f/go.mod h1:3p+LyOMQ6ypvALF6fF979kB5xD8iFzI42vKl3evZo/Q=
+github.com/FlowingSPDG/streamdeck v0.0.0-20221211164639-19c5641697e8 h1:t6I4EkhBxxlVOdw5wby+bHsFF+706LqQmwVBl1QnniU=
+github.com/FlowingSPDG/streamdeck v0.0.0-20221211164639-19c5641697e8/go.mod h1:3p+LyOMQ6ypvALF6fF979kB5xD8iFzI42vKl3evZo/Q=
 github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d/go.mod h1:3eOhrUMpNV+6aFIbp5/iudMxNCF27Vw2OZgy4xEx0Fg=
 github.com/c-bata/go-prompt v0.2.6/go.mod h1:/LMAke8wD2FsNu9EXNdHxNLbd9MedkPnCdfpU9wwHfY=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/go-ole/go-ole v1.2.5/go.mod h1:pprOEPIfldk/42T2oK7lQ4v4JSDwmV0As9GaiUsvbm0=
+github.com/google/go-cmp v0.3.0 h1:crn/baboCvb5fXaQ0IJ1SGTsTVrWpDsCWC8EGETZijY=
 github.com/google/go-cmp v0.3.0/go.mod h1:8QqcDgzrUqlUb/G2PQTWiueGozuR1884gddMywk6iLU=
 github.com/gorilla/websocket v1.5.0 h1:PPwGk2jz7EePpoHN/+ClbZu8SPxiqlu12wZP/3sWmnc=
 github.com/gorilla/websocket v1.5.0/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
@@ -27,6 +24,7 @@ github.com/mattn/go-tty v0.0.3/go.mod h1:ihxohKRERHTVzN+aSVRwACLCeqIoZAWpoICkkvr
 github.com/olahol/melody v1.1.1/go.mod h1:GgkTl6Y7yWj/HtfD48Q5vLKPVoZOH+Qqgfa7CvJgJM4=
 github.com/oliamb/cutter v0.2.2 h1:Lfwkya0HHNU1YLnGv2hTkzHfasrSMkgv4Dn+5rmlk3k=
 github.com/oliamb/cutter v0.2.2/go.mod h1:4BenG2/4GuRBDbVm/OPahDVqbrOemzpPiG5mi1iryBU=
+github.com/pkg/errors v0.8.1 h1:iURUrRGxPUNPdy5/HRSm+Yj6okJ6UtLINN0Q9M4+h3I=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pkg/term v1.2.0-beta.2/go.mod h1:E25nymQcrSllhX42Ok8MRm1+hyBdHY0dCeiKZ9jpNGw=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
@@ -55,4 +53,5 @@ golang.org/x/tools v0.0.0-20190624222133-a101b041ded4/go.mod h1:/rFqwRUd4F7ZHNgw
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
 gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
+gotest.tools/v3 v3.0.2 h1:kG1BFyqVHuQoVQiR1bWGnfz/fmHvvuiSPIV7rvl360E=
 gotest.tools/v3 v3.0.2/go.mod h1:3SzNCllyD9/Y+b5r9JIKQ474KzkZyqLqEfYqMsX94Bk=

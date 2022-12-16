@@ -29,21 +29,19 @@ const (
 	ActionShortcutTCP = "dev.flowingspdg.newtek.shortcuttcp"
 )
 
+// SDNewTek StreamDeck client
 type SDNewTek struct {
 	// クライアント情報は保持しない
 	// ハンドシェイクの遅延が気になるのであれば、map[string]newtek.ClientV1 でIPベースで保持しても良いかもしれない
 	sd *streamdeck.Client
 
-	shortcutContexts    map[string]struct{}
-	shortcutTCPContexts map[string]struct{}
 	videoPreviewContext sync.Map
 }
 
+// NewSDNewTek Get New StreamDeck plugin instance pointer
 func NewSDNewTek(ctx context.Context, params streamdeck.RegistrationParams) *SDNewTek {
 	ret := &SDNewTek{
 		sd:                  nil,
-		shortcutContexts:    map[string]struct{}{},
-		shortcutTCPContexts: map[string]struct{}{},
 		videoPreviewContext: sync.Map{},
 	}
 
@@ -51,15 +49,7 @@ func NewSDNewTek(ctx context.Context, params streamdeck.RegistrationParams) *SDN
 
 	actionShortcut := client.Action(ActionShortcut)
 	actionShortcut.RegisterHandler(streamdeck.WillAppear, ret.ShortcutWillAppearHandler)
-	actionShortcut.RegisterHandler(streamdeck.WillAppear, func(ctx context.Context, client *streamdeck.Client, event streamdeck.Event) error {
-		ret.shortcutContexts[event.Context] = struct{}{}
-		return nil
-	})
 	actionShortcut.RegisterHandler(streamdeck.KeyDown, ret.ShortcutKeyDownHandler)
-	actionShortcut.RegisterHandler(streamdeck.WillDisappear, func(ctx context.Context, client *streamdeck.Client, event streamdeck.Event) error {
-		delete(ret.shortcutContexts, event.Context)
-		return nil
-	})
 
 	actionVideoPreview := client.Action(ActionVideoPreview)
 	actionVideoPreview.RegisterHandler(streamdeck.WillAppear, ret.VideoPreviewWillAppearHandler)
@@ -71,49 +61,17 @@ func NewSDNewTek(ctx context.Context, params streamdeck.RegistrationParams) *SDN
 
 	actionShortcutTCP := client.Action(ActionShortcutTCP)
 	actionShortcutTCP.RegisterHandler(streamdeck.WillAppear, ret.ShortcutTCPWillAppearHandler)
-	actionShortcutTCP.RegisterHandler(streamdeck.WillAppear, func(ctx context.Context, client *streamdeck.Client, event streamdeck.Event) error {
-		ret.shortcutTCPContexts[event.Context] = struct{}{}
-		return nil
-	})
 	actionShortcutTCP.RegisterHandler(streamdeck.KeyDown, ret.ShortcutTCPKeyDownHandler)
-	actionShortcutTCP.RegisterHandler(streamdeck.WillDisappear, func(ctx context.Context, client *streamdeck.Client, event streamdeck.Event) error {
-		delete(ret.shortcutTCPContexts, event.Context)
-		return nil
-	})
 
 	ret.sd = client
 
 	return ret
 }
 
+// Run Start client
 func (s *SDNewTek) Run(ctx context.Context) error {
 	go s.videoPreviewGoroutine(ctx)
 	return s.sd.Run()
-}
-
-type cacher struct {
-	m sync.Map
-}
-
-type cacherKey struct {
-	host string
-	name string
-}
-
-func (c *cacher) getCache(key cacherKey) (image.Image, bool) {
-	v, ok := c.m.Load(key)
-	if !ok {
-		return nil, ok
-	}
-	i, o := v.(image.Image)
-	if !o {
-		return nil, o
-	}
-	return i, ok
-}
-
-func (c *cacher) storeCache(key cacherKey, img image.Image) {
-	c.m.Store(key, img)
 }
 
 func (s *SDNewTek) videoPreviewGoroutine(ctx context.Context) error {
@@ -126,7 +84,7 @@ func (s *SDNewTek) videoPreviewGoroutine(ctx context.Context) error {
 		default:
 			// map-based Image cacher
 			cs := cacher{}
-			s.videoPreviewContext.Range(func(key, value interface{}) bool {
+			s.videoPreviewContext.Range(func(key, value any) bool {
 				ctxStr := key.(string)
 				pi := value.(VideoPreviewPI)
 				sctx := sdcontext.WithContext(ctx, ctxStr)
@@ -151,16 +109,12 @@ func (s *SDNewTek) videoPreviewGoroutine(ctx context.Context) error {
 					// Fetch new image
 					c, err := newtek.NewClientV1(pi.Host, pi.User, pi.Password)
 					if err != nil {
-						msg := fmt.Sprintf("Failed to connect NewTek Client: %s", err)
-						s.sd.LogMessage(msg)
-						s.sd.ShowAlert(sctx)
+						time.Sleep(time.Second)
 						return true
 					}
 					img, err = c.VideoPreview(pi.Name, buttonSize*5, buttonSize*3, 25)
 					if err != nil {
-						msg := fmt.Sprintf("Failed to send Shortcut to NewTek Client: %s", err)
-						s.sd.LogMessage(msg)
-						s.sd.ShowAlert(sctx)
+						time.Sleep(time.Second)
 						return true
 					}
 
@@ -216,7 +170,7 @@ func (s *SDNewTek) videoPreviewGoroutine(ctx context.Context) error {
 						Mode:   cutter.TopLeft,
 					})
 					if err != nil {
-						msg := fmt.Sprintf("Failed to send Shortcut to NewTek Client: %s", err)
+						msg := fmt.Sprintf("Failed to crop image: %s", err)
 						s.sd.LogMessage(msg)
 						s.sd.ShowAlert(sctx)
 						return true

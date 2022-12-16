@@ -45,7 +45,6 @@ prepare:
 	@$(MKDIR) $(BUILDDIR)
 	@$(RM) $(BUILDDIR)/*
 
-# Should support Mac with gox
 build: prepare
 	cd $(SRCDIR)/code/cmd && GOOS=darwin GOARCH=amd64 go build -o $(BUILDDIR)/newtek_go .
 	cd $(SRCDIR)/code/cmd && GOOS=windows GOARCH=amd64 go build -o $(BUILDDIR)/newtek_go.exe .
