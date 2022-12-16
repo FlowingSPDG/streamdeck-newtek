@@ -2,6 +2,8 @@ github.com/FlowingSPDG/newtek-go v0.0.0-20221210114803-a47565f45bc9 h1:5L0A1Xt0D
 github.com/FlowingSPDG/newtek-go v0.0.0-20221210114803-a47565f45bc9/go.mod h1:ff2nWnFbPJz+LmB2Zezp7vXniWDb+BmLAG60nnpOyWQ=
 github.com/FlowingSPDG/streamdeck v0.0.0-20221211164639-19c5641697e8 h1:t6I4EkhBxxlVOdw5wby+bHsFF+706LqQmwVBl1QnniU=
 github.com/FlowingSPDG/streamdeck v0.0.0-20221211164639-19c5641697e8/go.mod h1:3p+LyOMQ6ypvALF6fF979kB5xD8iFzI42vKl3evZo/Q=
+github.com/FlowingSPDG/streamdeck v0.0.0-20221216130808-df1199768e06 h1:1Rc8NBLDek11I9Pb2GBtoBrzIqcm3eHr1p+8/O7Yd5c=
+github.com/FlowingSPDG/streamdeck v0.0.0-20221216130808-df1199768e06/go.mod h1:/3QMNCoMlb25Lcc2GIoFEzijCcvggilMxTDk7EiuQps=
 github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d/go.mod h1:3eOhrUMpNV+6aFIbp5/iudMxNCF27Vw2OZgy4xEx0Fg=
 github.com/c-bata/go-prompt v0.2.6/go.mod h1:/LMAke8wD2FsNu9EXNdHxNLbd9MedkPnCdfpU9wwHfY=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
@@ -38,6 +40,8 @@ golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACk
 golang.org/x/net v0.0.0-20190311183353-d8887717615a/go.mod h1:t9HGtf8HONx5eT2rtn7q6eTqICYqUVnKs3thJo3Qplg=
 golang.org/x/sync v0.0.0-20190423024810-112230192c58/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
+golang.org/x/sync v0.1.0 h1:wsuoTGHzEhffawBOhz5CYhcrV4IdKZbEyZjBMuTp12o=
+golang.org/x/sync v0.1.0/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sys v0.0.0-20190215142949-d0b11bdaac8a/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
 golang.org/x/sys v0.0.0-20190222072716-a9d3bda3a223/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
 golang.org/x/sys v0.0.0-20190916202348-b4ddaad3f8a3/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
