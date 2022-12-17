@@ -27,31 +27,6 @@ func (p *ShortcutPI) Initialize() {
 	p.Password = "admin"
 }
 
-// VideoPreviewPI Property Inspector setting for Video Thumbnail Preview
-type VideoPreviewPI struct {
-	Host     string `json:"host"`
-	User     string `json:"user"`
-	Password string `json:"password"`
-	Name     string `json:"name"`
-
-	// If you use full-screen...
-	Segment int `json:"segment,string"` // 1~15, Left-up to Right-bottom. 0 to disable
-}
-
-func (p *VideoPreviewPI) IsDefault() bool {
-	if p.Name == "" && p.Host == "" && p.User == "" && p.Password == "" && p.Segment == 0 {
-		return true
-	}
-	return false
-}
-
-func (p *VideoPreviewPI) Initialize() {
-	p.User = "admin"
-	p.Password = "admin"
-	p.Name = "output1"
-	p.Segment = 0
-}
-
 // ShortcutTCPPI Property Inspector setting for Shortcut action
 type ShortcutTCPPI struct {
 	Shortcut string `json:"shortcut"`

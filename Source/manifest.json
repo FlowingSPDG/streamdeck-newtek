@@ -29,21 +29,6 @@
       "Tooltip": "send Shortcut(TCP)",
       "UUID": "dev.flowingspdg.newtek.shortcuttcp",
       "Icon": "images/icon" 
-    },
-    {
-      "Name": "Preview Video Thumbnail",
-      "States": [
-        {
-          "Image": "images/icon",
-          "TitleAlignment": "middle",
-          "FontSize": "24"
-        }
-      ],
-      "PropertyInspectorPath": "inspector/thumbnail.html", 
-      "SupportedInMultiActions": true,
-      "Tooltip": "Preview Video Thumbnail",
-      "UUID": "dev.flowingspdg.newtek.videopreview",
-      "Icon": "images/icon" 
     }
   ],
   "SDKVersion": 2,
