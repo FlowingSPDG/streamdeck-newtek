@@ -67,7 +67,9 @@ func (p *ShortcutTCPPI) IsDefault() bool {
 }
 
 func (p *ShortcutTCPPI) Initialize() {
-	//
+	p.Host = "localhost"
+	p.Shortcut = ""
+	p.Value = ""
 }
 
 func (p *ShortcutTCPPI) ToShortcuts() newtek.Shortcuts {
