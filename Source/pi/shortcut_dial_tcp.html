@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>NewTek Shortcut</title>
+  <link rel="stylesheet" href="sdpi.css">
+</head>
+
+<script src="sdtools.common.js"></script>
+
+<body>
+  <div class="sdpi-wrapper">
+
+    <h3>Settings</h3>
+
+    <div class="sdpi-item">
+      <div class="sdpi-item-label">Host</div>
+      <div class="sdpi-item-child">
+        <input id="host" class="sdProperty" onInput="setSettings()"></input>
+      </div>
+    </div>
+
+    <h3>Push</h3>
+    <div class="sdpi-item">
+      <div class="sdpi-item-label">Shortcut Name</div>
+      <div class="sdpi-item-child">
+        <input id="push_shortcut" class="sdProperty" onInput="setSettings()"></input>
+      </div>
+    </div>
+
+    <div class="sdpi-item">
+      <div class="sdpi-item-label">Query</div>
+      <div class="sdpi-item-child">
+        <input id="push_value" class="sdProperty" onInput="setSettings()"></input>
+      </div>
+    </div>
+
+    <h3>Rotate</h3>
+    <div class="sdpi-item">
+      <div class="sdpi-item-label">Shortcut Name</div>
+      <div class="sdpi-item-child">
+        <input id="rotate_shortcut" class="sdProperty" onInput="setSettings()"></input>
+      </div>
+    </div>
+
+    <div class="sdpi-item">
+      <div class="sdpi-item-label">Query Value</div>
+      <div class="sdpi-item-child">
+        <input id="rotate_value" class="sdProperty" onInput="setSettings()"></input>
+      </div>
+    </div>
+
+    <div class="sdpi-item">
+      <div class="sdpi-item-label">Ticks</div>
+      <div class="sdpi-item-child">
+        <input id="rotate_use_ticks" class="sdProperty sdCheckbox" type="checkbox" value="checked" onInput="setSettings()">
+        <label for="rotate_use_ticks"><span></span>Use Ticks instead of query value</label><br>
+
+        <label for="x_of_ticks"><span></span>X of ticks</label>
+        <input id="x_of_ticks" class="sdProperty" onInput="setSettings()" type="number" value="1"></input>
+      </div>
+    </div>
+
+    <h3>Touch</h3>
+    <div class="sdpi-item">
+      <div class="sdpi-item-label">Shortcut Name</div>
+      <div class="sdpi-item-child">
+        <input id="touch_shortcut" class="sdProperty" onInput="setSettings()"></input>
+      </div>
+    </div>
+
+    <div class="sdpi-item">
+      <div class="sdpi-item-label">Query Value</div>
+      <div class="sdpi-item-child">
+        <input id="touch_value" class="sdProperty" onInput="setSettings()"></input>
+      </div>
+    </div>
+  
+</div>
+<script>
+</script>
+</body>
+</html>

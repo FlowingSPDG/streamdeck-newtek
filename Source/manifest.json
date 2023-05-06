@@ -29,6 +29,32 @@
       "Tooltip": "send Shortcut(TCP)",
       "UUID": "dev.flowingspdg.newtek.shortcuttcp",
       "Icon": "images/icon" 
+    },
+    {
+      "Name": "Dial Shortcut(TCP)",
+      "States": [
+        {
+          "Image": "images/icon",
+          "TitleAlignment": "middle",
+          "FontSize": "24"
+        }
+      ],
+      "Controllers": ["Encoder"],
+      "Encoder": {
+        "background": "images/icon",
+        "layout": "$X1",
+        "StackColor": "#AABBCC",
+        "TriggerDescription": {
+          "Rotate": "Perform Rotate action",
+          "Push": "Perform Push action",
+          "Touch": "Perform Touch action"
+        }
+      },
+      "PropertyInspectorPath": "inspector/shortcut_dial_tcp.html", 
+      "SupportedInMultiActions": true,
+      "Tooltip": "send Shortcut(TCP)",
+      "UUID": "dev.flowingspdg.newtek.dialshortcuttcp",
+      "Icon": "images/icon" 
     }
   ],
   "SDKVersion": 2,
@@ -40,7 +66,7 @@
   "Name": "NewTek Unofficial", 
   "Icon": "images/icon", 
   "URL": "https://flowing.tokyo", 
-  "Version": "0.1.4",
+  "Version": "0.2.0",
   "OS": [
     {
       "Platform": "mac", 

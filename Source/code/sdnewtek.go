@@ -18,6 +18,9 @@ const (
 
 	// ActionShortcutTCP Perform action thru TCP
 	ActionShortcutTCP = "dev.flowingspdg.newtek.shortcuttcp"
+
+	// ActionDialShortcutTCP Perform dial action thru TCP
+	ActionDialShortcutTCP = "dev.flowingspdg.newtek.dialshortcuttcp"
 )
 
 // SDNewTek StreamDeck client
@@ -43,6 +46,12 @@ func NewSDNewTek(ctx context.Context, params streamdeck.RegistrationParams) *SDN
 	actionShortcutTCP.RegisterHandler(streamdeck.WillAppear, ret.ShortcutTCPWillAppearHandler)
 	actionShortcutTCP.RegisterHandler(streamdeck.KeyDown, ret.ShortcutTCPKeyDownHandler)
 
+	actionDialShortcutTCP := client.Action(ActionDialShortcutTCP)
+	actionDialShortcutTCP.RegisterHandler(streamdeck.WillAppear, ret.DialShortcutTCPWillAppearHandler)
+	actionDialShortcutTCP.RegisterHandler(streamdeck.TouchTap, ret.DialShortcutTCPTouchTapHandler)
+	actionDialShortcutTCP.RegisterHandler(streamdeck.DialDown, ret.DialShortcutTCPDialDownHandler)
+	actionDialShortcutTCP.RegisterHandler(streamdeck.DialRotate, ret.DialShortcutTCPDialRotateHandler)
+
 	ret.sd = client
 
 	return ret
@@ -50,5 +59,5 @@ func NewSDNewTek(ctx context.Context, params streamdeck.RegistrationParams) *SDN
 
 // Run Start client
 func (s *SDNewTek) Run(ctx context.Context) error {
-	return s.sd.Run()
+	return s.sd.Run(ctx)
 }

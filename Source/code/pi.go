@@ -57,3 +57,63 @@ func (p *ShortcutTCPPI) ToShortcuts() newtek.Shortcuts {
 		},
 	}
 }
+
+// DialShortcutTCPPI Property Inspector setting for Dial Shortcut action
+type DialShortcutTCPPI struct {
+	Host string `json:"host"`
+
+	// Push
+	PushShortcut string `json:"push_shortcut"`
+	PushValue    string `json:"push_value"`
+
+	// Rotate
+	RotateShortcut string `json:"rotate_shortcut"`
+	RotateValue    string `json:"rotate_value"`
+	RotateUseTicks bool   `json:"rotate_use_ticks"`
+	XOfTicks       string `json:"x_of_ticks"`
+
+	// Touch
+	TouchShortcut string `json:"touch_shortcut"`
+	TouchValue    string `json:"touch_value"`
+}
+
+func (p *DialShortcutTCPPI) IsDefault() bool {
+	return p.Host == ""
+}
+
+func (p *DialShortcutTCPPI) Initialize() {
+	p.Host = "localhost"
+}
+
+func (p *DialShortcutTCPPI) PushToShortcuts() newtek.Shortcuts {
+	return newtek.Shortcuts{
+		Shortcut: []newtek.Shortcut{
+			{
+				Name:  p.PushShortcut,
+				Value: p.PushValue,
+			},
+		},
+	}
+}
+
+func (p *DialShortcutTCPPI) RotateToShortcuts(val string) newtek.Shortcuts {
+	return newtek.Shortcuts{
+		Shortcut: []newtek.Shortcut{
+			{
+				Name:  p.RotateShortcut,
+				Value: val,
+			},
+		},
+	}
+}
+
+func (p *DialShortcutTCPPI) TouchToShortcuts() newtek.Shortcuts {
+	return newtek.Shortcuts{
+		Shortcut: []newtek.Shortcut{
+			{
+				Name:  p.TouchShortcut,
+				Value: p.TouchValue,
+			},
+		},
+	}
+}
