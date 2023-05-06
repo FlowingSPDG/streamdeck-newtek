@@ -232,7 +232,7 @@ func (s *SDNewTek) DialShortcutTCPDialRotateHandler(ctx context.Context, client 
 	client.LogMessage(ctx, msg)
 	val := payload.Settings.RotateValue
 	if payload.Settings.RotateUseTicks {
-		x, _ := strconv.Atoi(payload.Settings.XOfTicks)
+		x, _ := strconv.Atoi(payload.Settings.TicksMultiplyer)
 		val = strconv.Itoa(payload.Ticks * x)
 	}
 	if err := c.Shortcut(payload.Settings.RotateToShortcuts(val)); err != nil {

@@ -67,10 +67,10 @@ type DialShortcutTCPPI struct {
 	PushValue    string `json:"push_value"`
 
 	// Rotate
-	RotateShortcut string `json:"rotate_shortcut"`
-	RotateValue    string `json:"rotate_value"`
-	RotateUseTicks bool   `json:"rotate_use_ticks"`
-	XOfTicks       string `json:"x_of_ticks"`
+	RotateShortcut  string `json:"rotate_shortcut"`
+	RotateValue     string `json:"rotate_value"`
+	RotateUseTicks  bool   `json:"rotate_use_ticks"`
+	TicksMultiplyer string `json:"ticks_multiplyer"`
 
 	// Touch
 	TouchShortcut string `json:"touch_shortcut"`
